@@ -92,9 +92,12 @@ const reservationSlots = (roomId, bookingId, date, startTime, endTime) => {
 
 const reserveSlots = async (roomId, bookingId, date, startTime, endTime) => {
   try {
-    await BookingSlot.insertMany(reservationSlots(roomId, bookingId, date, startTime, endTime), {
-      ordered: true,
-    });
+    await BookingSlot.insertMany(
+      reservationSlots(roomId, bookingId, date, startTime, endTime),
+      {
+        ordered: true,
+      },
+    ); //So ordered means the operations are processed in order and the batch stops at the first error.
   } catch (error) {
     // insertMany can have inserted a prefix before discovering a duplicate.
     await BookingSlot.deleteMany({ bookingId });
@@ -118,7 +121,7 @@ const createBooking = async (bookingData, userId) => {
     const overlap = await checkOverlap(roomId, normalizedDate, startTime, endTime);
     if (overlap) throw new ApiError(409, 'Room is already booked for this time slot');
 
-    const bookingId = new mongoose.Types.ObjectId();
+    const bookingId = new mongoose.Types.ObjectId();// manually created id
     await reserveSlots(roomId, bookingId, normalizedDate, startTime, endTime);
     let booking;
     try {
@@ -134,7 +137,7 @@ const createBooking = async (bookingData, userId) => {
     await booking.populate([
       { path: 'roomId', select: 'name location floor capacity amenities image' },
       { path: 'userId', select: 'name email department' },
-    ]);
+    ]);// path tell which field have refernce and and i want only that fields in that table ->select
     return booking;
   } catch (error) {
     throw error;
@@ -155,13 +158,6 @@ const getBookings = async (filters = {}, page = 1, limit = 10) => {
     const d = normalizeDate(filters.date);
     query.date = d;
   }
-
-  if (filters.dateFrom || filters.dateTo) {
-    query.date = {};
-    if (filters.dateFrom) query.date.$gte = normalizeDate(filters.dateFrom);
-    if (filters.dateTo) query.date.$lte = normalizeDate(filters.dateTo);
-  }
-
   const skip = (page - 1) * limit;
   const [bookings, total] = await Promise.all([
     Booking.find(query)
