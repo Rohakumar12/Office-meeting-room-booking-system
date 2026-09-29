@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { adminService } from '../../services/adminService';
 import { bookingService } from '../../services/bookingService';
 import { roomService } from '../../services/roomService';
@@ -94,25 +94,25 @@ const AdminBookings = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
           Enterprise Bookings Management
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Monitor all employee reservations, filter by room or date, and manage cancellations.
         </p>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs">
-        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
-            <FunnelIcon className="w-4 h-4 text-blue-600" />
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-2xs">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+            <FunnelIcon className="w-4 h-4 text-blue-600 dark:text-blue-300" />
             Filter Company Bookings
           </div>
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+            className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 font-medium"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
             Reset
@@ -121,7 +121,7 @@ const AdminBookings = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Meeting Room
             </label>
             <select
@@ -130,7 +130,7 @@ const AdminBookings = () => {
                 setRoomId(e.target.value);
                 setPage(1);
               }}
-              className="w-full text-xs rounded-xl border border-slate-300 py-2 px-3 bg-white text-slate-700"
+              className="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-500 py-2 px-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
             >
               <option value="">All Rooms</option>
               {rooms.map((r) => (
@@ -142,7 +142,7 @@ const AdminBookings = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Status
             </label>
             <select
@@ -151,7 +151,7 @@ const AdminBookings = () => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="w-full text-xs rounded-xl border border-slate-300 py-2 px-3 bg-white text-slate-700"
+              className="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-500 py-2 px-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
             >
               <option value="">All Statuses</option>
               <option value="confirmed">Confirmed</option>
@@ -161,7 +161,7 @@ const AdminBookings = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Date
             </label>
             <input
@@ -171,7 +171,7 @@ const AdminBookings = () => {
                 setDate(e.target.value);
                 setPage(1);
               }}
-              className="w-full text-xs rounded-xl border border-slate-300 py-2 px-3 bg-white text-slate-700"
+              className="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-500 py-2 px-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
             />
           </div>
         </div>

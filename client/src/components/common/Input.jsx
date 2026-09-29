@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 const Input = forwardRef(
   (
@@ -23,14 +23,14 @@ const Input = forwardRef(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 mb-1"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
           >
-            {label} {required && <span className="text-red-500">*</span>}
+            {label} {required && <span className="text-red-500 dark:text-red-300">*</span>}
           </label>
         )}
         <div className="relative rounded-lg shadow-sm">
           {Icon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
               <Icon className="h-5 w-5" />
             </div>
           )}
@@ -43,15 +43,15 @@ const Input = forwardRef(
               Icon ? 'pl-10' : 'pl-3.5'
             } pr-3.5 ${
               error
-                ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50/20'
-                : 'border-slate-300 text-slate-900 placeholder-slate-400 focus:ring-blue-500 focus:border-blue-500 bg-white'
+                ? 'border-red-300 dark:border-red-600 text-red-900 dark:text-red-100 placeholder-red-300 dark:placeholder-red-200 focus:ring-red-500 dark:focus:ring-red-500 focus:border-red-500 dark:focus:border-red-500 bg-red-50/20 dark:bg-red-950/20'
+                : 'border-slate-300 dark:border-slate-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-slate-900'
             } ${className}`}
             {...props}
           />
         </div>
-        {error && <p className="mt-1 text-xs text-red-600 font-medium">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-600 dark:text-red-300 font-medium">{error}</p>}
         {helperText && !error && (
-          <p className="mt-1 text-xs text-slate-500">{helperText}</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
         )}
       </div>
     );

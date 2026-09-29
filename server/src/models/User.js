@@ -53,7 +53,11 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default: null,
-      maxlength: [2_100_000, "Profile photo is too large"],
+      maxlength: [2048, "Profile photo URL is too long"],
+    },
+    avatarPublicId: {
+      type: String,
+      default: null,
     },
   },
   {

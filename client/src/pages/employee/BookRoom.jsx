@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { roomService } from '../../services/roomService';
@@ -10,13 +10,9 @@ import Select from '../../components/common/Select';
 import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {
-  CalendarDaysIcon,
-  ClockIcon,
   UsersIcon,
-  SparklesIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
-  BuildingOfficeIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -79,19 +75,25 @@ const BookRoom = () => {
           const rooms = res.data.rooms || [];
           setAvailableRooms(rooms);
 
-          // If there's a preselected room ID, pick it if available
-          if (preselectedRoomId) {
-            const found = rooms.find((r) => r._id === preselectedRoomId);
-            if (found) {
-              setSelectedRoom(found);
-            } else if (rooms.length > 0 && !selectedRoom) {
-              setSelectedRoom(rooms[0]);
+          // Reconcile the current pick against the fresh results.
+          // The functional form always receives the latest state, so this
+          // cannot read a stale closure and needs no extra dependency.
+          // Reading selectedRoom directly left a room selected after the
+          // date, time, capacity or amenities changed - even once that room
+          // was no longer in the available set.
+          setSelectedRoom((current) => {
+            if (preselectedRoomId) {
+              const preselected = rooms.find((r) => r._id === preselectedRoomId);
+              if (preselected) return preselected;
             }
-          } else if (rooms.length > 0 && !selectedRoom) {
-            setSelectedRoom(rooms[0]);
-          }
+            // Keep the existing pick only while it is still bookable.
+            if (current && rooms.some((r) => r._id === current._id)) {
+              return current;
+            }
+            return rooms.length > 0 ? rooms[0] : null;
+          });
         }
-      } catch (err) {
+      } catch {
         toast.error('Failed to query available rooms');
       } finally {
         setLoadingRooms(false);
@@ -153,17 +155,17 @@ const BookRoom = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
           Book a Meeting Room
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Find available rooms matching your schedule and reserve instantly.
         </p>
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-sm text-red-700">
-          <ExclamationCircleIcon className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-700 flex items-start gap-3 text-sm text-red-700 dark:text-red-300">
+          <ExclamationCircleIcon className="w-5 h-5 text-red-500 dark:text-red-300 shrink-0 mt-0.5" />
           <div>
             <p className="font-bold">Booking Conflict or Validation Error</p>
             <p>{serverError}</p>
@@ -176,9 +178,9 @@ const BookRoom = () => {
           {/* Left 2 Cols: Step-by-Step Filter & Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Step 1: Meeting Details */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
                   1
                 </span>
                 Meeting Details
@@ -248,13 +250,13 @@ const BookRoom = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
                     Agenda / Notes (Optional)
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Brief description or meeting agenda..."
-                    className="block w-full rounded-lg border border-slate-300 py-2.5 px-3.5 text-sm bg-white text-slate-900 placeholder-slate-400 focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full rounded-lg border border-slate-300 dark:border-slate-500 py-2.5 px-3.5 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500"
                     {...register('description')}
                   />
                 </div>
@@ -262,14 +264,14 @@ const BookRoom = () => {
             </div>
 
             {/* Step 2: Required Amenities */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
                   2
                 </span>
                 Required Amenities
               </h2>
-              <p className="text-xs text-slate-500 mb-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                 Rooms lacking any of your checked amenities will be filtered out.
               </p>
 
@@ -283,15 +285,15 @@ const BookRoom = () => {
                       onClick={() => handleAmenityToggle(amenity)}
                       className={`p-2.5 text-xs font-semibold rounded-xl border text-left flex items-center gap-2 transition-all ${
                         isChecked
-                          ? 'bg-blue-50 border-blue-500 text-blue-800 ring-1 ring-blue-500/20'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                          ? 'bg-blue-50 dark:bg-blue-950 border-blue-500 dark:border-blue-500 text-blue-800 dark:text-blue-200 ring-1 ring-blue-500/20 dark:ring-blue-500/20'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-950'
                       }`}
                     >
                       <span
                         className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] ${
                           isChecked
-                            ? 'bg-blue-600 border-blue-600 text-white'
-                            : 'border-slate-300'
+                            ? 'bg-blue-600 dark:bg-blue-600 border-blue-600 dark:border-blue-400 text-white'
+                            : 'border-slate-300 dark:border-slate-500'
                         }`}
                       >
                         {isChecked && '✓'}
@@ -304,15 +306,15 @@ const BookRoom = () => {
             </div>
 
             {/* Step 3: Available Rooms Selection */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
                     3
                   </span>
                   Select an Available Room
                 </h2>
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {availableRooms.length} room(s) available
                 </span>
               </div>
@@ -322,12 +324,12 @@ const BookRoom = () => {
                   <LoadingSpinner text="Checking real-time room availability..." />
                 </div>
               ) : availableRooms.length === 0 ? (
-                <div className="text-center py-8 px-4 bg-amber-50/50 rounded-xl border border-amber-200">
-                  <ExclamationCircleIcon className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                  <p className="text-sm font-bold text-amber-900">
+                <div className="text-center py-8 px-4 bg-amber-50/50 dark:bg-amber-950/50 rounded-xl border border-amber-200 dark:border-amber-700">
+                  <ExclamationCircleIcon className="w-8 h-8 text-amber-500 dark:text-amber-300 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
                     No Rooms Available for this Slot
                   </p>
-                  <p className="text-xs text-amber-700 mt-1 max-w-md mx-auto">
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-1 max-w-md mx-auto">
                     Try changing your selected time, choosing a different date,
                     or unchecking non-essential amenities.
                   </p>
@@ -342,32 +344,32 @@ const BookRoom = () => {
                         onClick={() => setSelectedRoom(room)}
                         className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-150 ${
                           isSelected
-                            ? 'bg-blue-50/60 border-blue-600 shadow-sm ring-2 ring-blue-500/20'
-                            : 'bg-white border-slate-200 hover:border-slate-300'
+                            ? 'bg-blue-50/60 dark:bg-blue-950/60 border-blue-600 dark:border-blue-400 shadow-sm ring-2 ring-blue-500/20 dark:ring-blue-500/20'
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="text-sm font-bold text-slate-900">
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                               {room.name}
                             </h3>
-                            <p className="text-xs text-slate-500 mt-0.5">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                               {room.location} • {room.floor}
                             </p>
                           </div>
                           <span
                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs ${
                               isSelected
-                                ? 'bg-blue-600 border-blue-600 text-white'
-                                : 'border-slate-300'
+                                ? 'bg-blue-600 dark:bg-blue-600 border-blue-600 dark:border-blue-400 text-white'
+                                : 'border-slate-300 dark:border-slate-500'
                             }`}
                           >
                             {isSelected && '✓'}
                           </span>
                         </div>
 
-                        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-700">
-                          <UsersIcon className="w-4 h-4 text-blue-600" />
+                        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                          <UsersIcon className="w-4 h-4 text-blue-600 dark:text-blue-300" />
                           <span>Capacity: {room.capacity}</span>
                         </div>
 
@@ -375,7 +377,7 @@ const BookRoom = () => {
                           {room.amenities?.slice(0, 3).map((a, i) => (
                             <span
                               key={i}
-                              className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
+                              className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded"
                             >
                               {a}
                             </span>
@@ -391,46 +393,46 @@ const BookRoom = () => {
 
           {/* Right 1 Col: Booking Summary & Confirm Button */}
           <div className="space-y-6 lg:sticky lg:top-20">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4">
                 Booking Summary
               </h3>
 
-              <div className="space-y-3 text-xs border-b border-slate-100 pb-4">
+              <div className="space-y-3 text-xs border-b border-slate-100 dark:border-slate-700 pb-4">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Selected Room:</span>
-                  <span className="font-bold text-slate-900 text-right">
+                  <span className="text-slate-500 dark:text-slate-400">Selected Room:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100 text-right">
                     {selectedRoom?.name || 'None selected'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Date:</span>
-                  <span className="font-semibold text-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">Date:</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-100">
                     {formatDate(watchDate)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Time Window:</span>
-                  <span className="font-mono font-semibold text-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">Time Window:</span>
+                  <span className="font-mono font-semibold text-slate-800 dark:text-slate-100">
                     {formatTime12h(watchStartTime)} -{' '}
                     {formatTime12h(watchEndTime)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Attendees:</span>
-                  <span className="font-semibold text-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">Attendees:</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-100">
                     {watchAttendees} person(s)
                   </span>
                 </div>
               </div>
 
               {selectedRoom && (
-                <div className="mt-4 p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800">
+                <div className="mt-4 p-3.5 bg-emerald-50 dark:bg-emerald-950 rounded-xl border border-emerald-200 dark:border-emerald-700 text-xs text-emerald-800 dark:text-emerald-200">
                   <div className="flex items-center gap-1.5 font-bold mb-1">
-                    <CheckCircleIcon className="w-4 h-4 text-emerald-600" />
+                    <CheckCircleIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
                     Slot Verified & Available
                   </div>
-                  <p className="text-[11px] text-emerald-700">
+                  <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
                     This room meets all your capacity and amenity requirements.
                   </p>
                 </div>
@@ -449,7 +451,7 @@ const BookRoom = () => {
                 </Button>
               </div>
 
-              <p className="mt-3 text-center text-[11px] text-slate-400">
+              <p className="mt-3 text-center text-[11px] text-slate-400 dark:text-slate-500">
                 You can edit or cancel this booking anytime before the meeting starts.
               </p>
             </div>

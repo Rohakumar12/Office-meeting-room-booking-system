@@ -12,9 +12,9 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
     const user = await authService.login(email, password);
-    authService.sendTokenResponse(user, 200, res, 'Login successful');
+    authService.sendTokenResponse(user, 200, res, 'Login successful', { rememberMe });
   } catch (error) {
     next(error);
   }

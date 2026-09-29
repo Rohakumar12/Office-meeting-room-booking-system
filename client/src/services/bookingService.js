@@ -25,9 +25,4 @@ export const bookingService = {
     const response = await api.delete(`/bookings/${id}`);
     return response.data;
   },
-
-  checkAvailability: async (params) => {
-    const response = await api.get('/bookings/availability', { params });
-    return response.data;
-  },
 };

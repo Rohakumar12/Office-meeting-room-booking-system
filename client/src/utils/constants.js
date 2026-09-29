@@ -27,28 +27,20 @@ export const TIME_SLOTS = [
   '20:00'
 ];
 
-export const OFFICE_HOURS = {
-  start: '08:00',
-  end: '20:00'
-};
-
 export const STATUS_COLORS = {
   confirmed: {
-    badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    dot: 'bg-emerald-500',
-    text: 'text-emerald-700',
+    badge: 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700',
+    dot: 'bg-emerald-500 dark:bg-emerald-600',
     label: 'Confirmed',
   },
   cancelled: {
-    badge: 'bg-slate-100 text-slate-700 border-slate-200',
-    dot: 'bg-slate-400',
-    text: 'text-slate-600',
+    badge: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-600',
+    dot: 'bg-slate-400 dark:bg-slate-700',
     label: 'Cancelled',
   },
   completed: {
-    badge: 'bg-blue-100 text-blue-800 border-blue-200',
-    dot: 'bg-blue-500',
-    text: 'text-blue-700',
+    badge: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700',
+    dot: 'bg-blue-500 dark:bg-blue-600',
     label: 'Completed',
   },
 };

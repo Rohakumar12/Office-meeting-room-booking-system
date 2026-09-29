@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { bookingService } from '../../services/bookingService';
 import BookingTable from '../../components/bookings/BookingTable';
 import BookingCard from '../../components/bookings/BookingCard';
@@ -6,7 +6,6 @@ import EditBookingModal from '../../components/bookings/EditBookingModal';
 import Pagination from '../../components/common/Pagination';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import {
-  CalendarDaysIcon,
   TableCellsIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline';
@@ -78,22 +77,22 @@ const MyBookings = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
             My Bookings
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             View history, modify meeting times, or cancel upcoming reservations.
           </p>
         </div>
 
         {/* View mode toggle */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-600 shadow-2xs self-start sm:self-auto">
           <button
             onClick={() => setViewMode('table')}
             className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
               viewMode === 'table'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
             }`}
           >
             <TableCellsIcon className="w-4 h-4" />
@@ -103,8 +102,8 @@ const MyBookings = () => {
             onClick={() => setViewMode('cards')}
             className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
               viewMode === 'cards'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
             }`}
           >
             <Squares2X2Icon className="w-4 h-4" />
@@ -114,7 +113,7 @@ const MyBookings = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-slate-200">
+      <div className="border-b border-slate-200 dark:border-slate-600">
         <nav className="flex space-x-8">
           {[
             { id: 'confirmed', label: 'Confirmed' },
@@ -130,8 +129,8 @@ const MyBookings = () => {
               }}
               className={`pb-4 px-1 text-sm font-semibold border-b-2 transition-colors ${
                 statusTab === tab.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-300'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-500'
               }`}
             >
               {tab.label}

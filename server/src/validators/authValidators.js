@@ -12,7 +12,12 @@ const registerSchema = Joi.object({
   }),
   password: Joi.string()
     .min(8)
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    // Must contain a lowercase, an uppercase, a digit and a special character.
+    // The digit and special-character checks use (?=.*x) so they match anywhere
+    // in the string. The previous (?=\d) only passed when the password began
+    // with a digit: the client enforced that strictly while the server did not,
+    // so the two validators disagreed and valid passwords were rejected.
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
     .required()
     .messages({
       'string.min': 'Password must be at least 8 characters',
@@ -22,15 +27,6 @@ const registerSchema = Joi.object({
     }),
   department: Joi.string().trim().max(100).optional(),
   employeeId: Joi.string().trim().max(50).optional(),
-  avatar: Joi.string()
-    .uri()
-    .max(2_100_000)
-    .allow('', null)
-    .optional()
-    .messages({
-      'string.uri': 'Profile photo must be a valid image URL or upload',
-      'string.max': 'Profile photo is too large',
-    }),
 });
 
 const loginSchema = Joi.object({
@@ -41,6 +37,7 @@ const loginSchema = Joi.object({
   password: Joi.string().required().messages({
     'any.required': 'Password is required',
   }),
+  rememberMe: Joi.boolean().default(true),
 });
 
 module.exports = { registerSchema, loginSchema };

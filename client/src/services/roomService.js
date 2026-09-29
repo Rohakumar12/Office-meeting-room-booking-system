@@ -35,4 +35,12 @@ export const roomService = {
     const response = await api.get(`/rooms/${id}/schedule`, { params: { date } });
     return response.data;
   },
+
+  uploadRoomImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await api.post('/rooms/image', formData);
+    return response.data;
+  },
 };

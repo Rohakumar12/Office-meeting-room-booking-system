@@ -1,0 +1,763 @@
+/*
+ * Auth screen styles.
+ *
+ * Ported from a Tailwind v4 stylesheet. Two changes were required for this
+ * project (Tailwind v3 + PostCSS without native nesting):
+ *   1. `@utility name { ... }`  ->  plain class rules inside @layer components
+ *   2. Nested `&:hover` / `& h2` rules -> flattened to `.parent:hover` etc.
+ *
+ * Colour values are kept as oklch so the design renders identically.
+ *
+ * The @tailwind components directive is repeated here because this file is
+ * processed standalone; it is required for the @layer block below to resolve.
+ */
+
+@tailwind components;
+
+/* ------------------------------------------------------------------ scene */
+
+@layer components {
+  .login-scene {
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 0.5rem 1rem;
+    background:
+      linear-gradient(
+        105deg,
+        oklch(0.78 0.19 322 / 0.9) 0%,
+        oklch(0.67 0.11 17 / 0.88) 45%,
+        oklch(0.96 0.09 41 / 0.7) 100%
+      ),
+      var(--color-background, #f5f5f4);
+  }
+
+  .login-shell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: min(1160px, 100%);
+    min-height: calc(100vh - 1rem);
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 0 0 1.5rem 1.5rem;
+    background: oklch(0.9 0.025 55 / 0.68);
+    box-shadow: 0 18px 50px oklch(0.18 0.03 20 / 0.18);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+
+  /* ------------------------------------------------------------- form side */
+
+  .auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-brand-mark {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    background: oklch(0.99 0 0 / 0.9);
+    box-shadow: 0 6px 16px oklch(0.35 0.16 280 / 0.35);
+  }
+
+  .auth-brand-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .auth-brand-name {
+    color: oklch(0.99 0 0);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .login-form-panel {
+    display: flex;
+    justify-content: center;
+    padding: clamp(3rem, 6vh, 4rem) 3rem 4rem;
+    background:
+      radial-gradient(circle at 12% 8%, oklch(0.55 0.2 320 / 0.38), transparent 38%),
+      radial-gradient(circle at 92% 36%, oklch(0.59 0.12 42 / 0.48), transparent 45%),
+      linear-gradient(165deg, oklch(0.48 0.13 331 / 0.38), oklch(0.74 0.045 62 / 0.5));
+  }
+
+  .form-wrap {
+    width: min(100%, 25rem);
+  }
+
+  .login-title {
+    margin: 0;
+    color: oklch(0.99 0 0);
+    font-size: clamp(2rem, 3.2vw, 2.25rem);
+    font-weight: 650;
+    line-height: 1.1;
+  }
+
+  .login-subtitle {
+    margin: 0.8rem 0 2.6rem;
+    color: oklch(0.99 0 0);
+    font-size: 1.08rem;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field-label {
+    margin: 0 0 0.75rem 0.4rem;
+    color: oklch(0.99 0 0);
+    font-size: 0.95rem;
+  }
+
+  .login-input {
+    width: 100%;
+    height: 3.45rem;
+    margin-bottom: 0.8rem;
+    padding: 0 1.5rem;
+    border: 1px solid oklch(0.82 0.045 320 / 0.55);
+    border-radius: 999px;
+    outline: none;
+    color: oklch(0.96 0 0);
+    /* Deep plum rather than the original teal-black, so the fields pick up the
+       same magenta/warm light as the radiant card instead of clashing with it. */
+    background: oklch(0.16 0.032 310);
+    box-shadow:
+      inset 0 8px 15px oklch(0 0 0 / 0.6),
+      inset 0 -2px 8px oklch(0.34 0.05 300 / 0.22);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .login-input::placeholder {
+    color: oklch(0.99 0 0 / 0.45);
+  }
+
+  .login-input:focus {
+    border-color: oklch(0.91 0.09 27);
+    background: oklch(0.19 0.035 310);
+    box-shadow:
+      inset 0 8px 15px oklch(0 0 0 / 0.55),
+      0 0 0 3px oklch(0.9 0.1 25 / 0.25);
+  }
+
+  .login-input[aria-invalid='true'] {
+    border-color: oklch(0.62 0.22 25);
+    background: oklch(0.2 0.045 15);
+    box-shadow:
+      inset 0 8px 15px oklch(0 0 0 / 0.55),
+      0 0 0 3px oklch(0.62 0.22 25 / 0.22);
+  }
+
+  .password-input {
+    letter-spacing: 0.18rem;
+  }
+
+  .form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.7rem 0 1.55rem;
+    padding: 0 0.2rem;
+    color: oklch(0.99 0 0);
+    font-size: 0.9rem;
+  }
+
+  .form-options a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .remember-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .remember-box {
+    display: grid;
+    width: 1.05rem;
+    height: 1.05rem;
+    place-items: center;
+    border: 1px solid oklch(0.99 0 0 / 0.6);
+    border-radius: 0.3rem;
+    background: oklch(1 0 0 / 0.12);
+    transition:
+      background 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .remember-box[data-checked='true'] {
+    border-color: oklch(0.78 0.15 30);
+    background: linear-gradient(135deg, oklch(0.82 0.12 45), oklch(0.7 0.21 13));
+  }
+
+  .form-error {
+    margin: 0 0 0.8rem 0.4rem;
+    color: oklch(0.93 0.06 30);
+    font-size: 0.82rem;
+  }
+
+  .form-alert {
+    margin: 0 0 1.2rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid oklch(0.62 0.22 25 / 0.7);
+    border-radius: 0.75rem;
+    background: oklch(0.35 0.12 20 / 0.35);
+    color: oklch(0.96 0.05 30);
+    font-size: 0.85rem;
+  }
+
+  .sign-in-button {
+    height: 3.5rem;
+    border: 1px solid oklch(0.96 0.11 20 / 0.8);
+    border-radius: 999px;
+    color: oklch(0.09 0.01 20);
+    background: linear-gradient(90deg, oklch(0.82 0.12 45), oklch(0.7 0.21 13));
+    box-shadow: 0 8px 20px oklch(0.3 0.08 20 / 0.15);
+    font-size: 1.12rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+      transform 160ms ease,
+      filter 160ms ease;
+  }
+
+  .sign-in-button:hover:not(:disabled) {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+
+  .sign-in-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .sign-in-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .demo-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.85rem;
+    margin-top: 2.4rem;
+  }
+
+  .demo-button {
+    height: 2.6rem;
+    padding: 0 1.1rem;
+    border: 1px solid oklch(0.99 0 0 / 0.45);
+    border-radius: 999px;
+    color: oklch(0.99 0 0);
+    background: oklch(1 0 0 / 0.14);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 160ms ease,
+      transform 160ms ease;
+  }
+
+  .demo-button:hover {
+    background: oklch(1 0 0 / 0.26);
+    transform: translateY(-2px);
+  }
+
+  .auth-alt-link {
+    display: block;
+    margin-top: 1.6rem;
+    text-align: center;
+    color: oklch(0.99 0 0 / 0.85);
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ------------------------------------------------------- testimonial side */
+
+  .testimonial-panel {
+    position: relative;
+    min-height: 44rem;
+    margin-right: 2.7rem;
+    overflow: visible;
+    border-radius: 0 0 2rem 2rem;
+    color: oklch(0.99 0 0);
+    background:
+      radial-gradient(circle at 80% 58%, oklch(0.5 0.2 258 / 0.9), transparent 38%),
+      radial-gradient(circle at 17% 78%, oklch(0.64 0.2 25 / 0.78), transparent 40%),
+      linear-gradient(150deg, oklch(0.1 0.02 20), oklch(0.06 0.01 250) 68%);
+    box-shadow: inset 0 0 30px oklch(0 0 0 / 0.28);
+  }
+
+  .testimonial-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Keeps the panel filling the column on the short sign-in screen, matching
+     the grid-stretch behaviour it had before it became a flex column. */
+  .testimonial-column .testimonial-panel {
+    flex: 1 1 auto;
+  }
+
+  .corner-tab {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5.25rem;
+    height: 1.15rem;
+    border-radius: 0 0 0 1.5rem;
+    background: oklch(0.56 0.12 19 / 0.78);
+  }
+
+  .testimonial-content {
+    position: relative;
+    z-index: 2;
+    padding: 2.25rem 2.7rem;
+  }
+
+  .testimonial-content h2 {
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 2.75rem);
+    font-weight: 650;
+    line-height: 1.3;
+  }
+
+  .testimonial-content blockquote {
+    margin: 0.75rem 0 2rem;
+    font-size: 1rem;
+    font-weight: 450;
+    line-height: 1.9;
+  }
+
+  .quote-mark {
+    display: block;
+    height: 2.5rem;
+    margin-top: 1.1rem;
+    font-family: Georgia, serif;
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .author-name {
+    margin: 0;
+    font-size: 1.14rem;
+    font-weight: 650;
+  }
+
+  .author-role {
+    margin: 0.55rem 0 0;
+    font-size: 0.97rem;
+    font-weight: 500;
+  }
+
+  .testimonial-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 3rem;
+  }
+
+  .arrow-button {
+    display: grid;
+    width: 4rem;
+    height: 3rem;
+    place-items: center;
+    border: 0;
+    border-radius: 0.45rem;
+    color: oklch(0.99 0 0);
+    cursor: pointer;
+    box-shadow: 0 8px 14px oklch(0 0 0 / 0.24);
+    transition: transform 160ms ease;
+  }
+
+  .arrow-button svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .arrow-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .arrow-previous {
+    background: linear-gradient(135deg, oklch(0.76 0.17 26), oklch(0.68 0.2 18));
+  }
+
+  .arrow-next {
+    background: linear-gradient(145deg, oklch(0.22 0.09 165), oklch(0.1 0.04 165));
+  }
+
+  .starburst {
+    position: absolute;
+    z-index: 1;
+    right: 0.7rem;
+    bottom: 8.5rem;
+    width: 18rem;
+    aspect-ratio: 1;
+    background: repeating-conic-gradient(
+      from 4deg,
+      oklch(0.72 0.19 309) 0deg 1deg,
+      transparent 1deg 16deg
+    );
+    clip-path: polygon(
+      50% 0,
+      56% 39%,
+      79% 9%,
+      64% 43%,
+      98% 26%,
+      67% 47%,
+      100% 50%,
+      67% 54%,
+      97% 75%,
+      63% 58%,
+      78% 93%,
+      56% 61%,
+      50% 100%,
+      46% 61%,
+      22% 94%,
+      39% 58%,
+      3% 75%,
+      37% 54%,
+      0 50%,
+      38% 47%,
+      3% 26%,
+      40% 43%,
+      22% 7%,
+      46% 39%
+    );
+    opacity: 0.88;
+  }
+
+  /* ------------------------- white card overlapping the testimonial panel */
+
+  .job-card {
+    /* Sits in normal flow under the panel and is pulled up by a small, fixed
+       amount. Using a negative margin (rather than absolute positioning) keeps
+       the overlap constant regardless of how tall the card's content is, and
+       keeps the card reachable by scrolling. */
+    position: relative;
+    z-index: 3;
+    /* The panel is inset 2.7rem from the right and has no left inset, so
+       matching that margin centres the card on the same axis as the panel
+       instead of letting it hang out past the panel's right edge. */
+    align-self: center;
+    width: min(28.5rem, 100%);
+    margin: -1.4rem 2.7rem 0 0;
+    padding: 1.7rem 2rem 1.4rem;
+    border-radius: 1.5rem;
+    border: 1px solid oklch(0.88 0.06 320 / 0.7);
+    color: oklch(0.1 0.015 330);
+    /* Radiant light blooms echoing the testimonial panel's magenta, warm and
+       blue radials, so the white card reads as lit by the same scene. */
+    background:
+      radial-gradient(circle at 10% 6%, oklch(0.83 0.14 330 / 0.6), transparent 46%),
+      radial-gradient(circle at 90% 14%, oklch(0.81 0.13 40 / 0.55), transparent 44%),
+      radial-gradient(circle at 72% 104%, oklch(0.85 0.12 255 / 0.45), transparent 48%),
+      oklch(0.99 0.01 320 / 0.97);
+    box-shadow:
+      0 -2px 10px oklch(0.45 0.12 320 / 0.2),
+      0 18px 40px oklch(0.2 0.04 320 / 0.28),
+      0 0 70px oklch(0.72 0.16 320 / 0.4);
+  }
+
+  /* Dark notch at the card's top-right corner */
+  .job-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3.4rem;
+    height: 2.6rem;
+    border-radius: 0 1.5rem 0 0;
+    background: oklch(0.06 0.02 240);
+  }
+
+  .job-card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  .job-card > p {
+    margin: 0.55rem 0 0;
+    color: oklch(0.35 0.03 330);
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .job-list {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .job-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .job-list-tick {
+    display: grid;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    place-items: center;
+    border-radius: 999px;
+    color: oklch(0.99 0 0);
+    background: oklch(0.58 0.19 258);
+  }
+
+  .job-list-title {
+    font-weight: 650;
+  }
+
+  .job-list-desc {
+    color: oklch(0.42 0.03 330);
+  }
+
+  .job-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid oklch(0.75 0.05 320 / 0.5);
+  }
+
+  .job-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.1rem;
+  }
+
+  .job-stat-value {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .job-stat-label {
+    margin: 0;
+    color: oklch(0.45 0.03 330);
+    font-size: 0.66rem;
+  }
+
+  .avatar-stack {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .avatar-stack span {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
+    margin-left: -0.42rem;
+    border: 2px solid oklch(0.99 0 0);
+    border-radius: 999px;
+    color: oklch(0.99 0 0);
+    background: oklch(0.3 0.08 25);
+    font-size: 0.55rem;
+    font-weight: 600;
+  }
+
+  .avatar-stack span:first-child {
+    margin-left: 0;
+  }
+
+  .avatar-stack span:nth-child(2) {
+    background: oklch(0.43 0.11 240);
+  }
+
+  .avatar-stack span:nth-child(3) {
+    background: oklch(0.55 0.13 85);
+  }
+
+  .avatar-stack span:nth-child(4) {
+    background: oklch(0.15 0.02 250);
+  }
+
+  /* ------------------------------------------------- register form variant */
+
+  /* The sign-in form is short and fits one screen. The register form is much
+     taller, so the shell stops stretching its row and the page scrolls. */
+  .login-scene {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .login-shell--tall {
+    min-height: 0;
+  }
+
+  .login-shell--tall .login-form-panel {
+    padding: 3.25rem 2.5rem 3.5rem;
+  }
+
+  .form-wrap--wide {
+    width: min(100%, 30rem);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .field-hint {
+    margin: -0.35rem 0 0.9rem 0.4rem;
+    color: oklch(0.99 0 0 / 0.6);
+    font-size: 0.78rem;
+  }
+
+  .avatar-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0.2rem 0 1.2rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid oklch(0.99 0 0 / 0.25);
+    border-radius: 0.9rem;
+    background: oklch(1 0 0 / 0.08);
+  }
+
+  .avatar-preview {
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 999px;
+    color: oklch(0.99 0 0 / 0.8);
+    background: oklch(1 0 0 / 0.16);
+  }
+
+  .avatar-file {
+    width: 100%;
+    min-width: 0;
+    color: oklch(0.99 0 0 / 0.85);
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .avatar-file::file-selector-button {
+    margin-right: 0.7rem;
+    padding: 0.4rem 0.85rem;
+    border: 0;
+    border-radius: 999px;
+    color: oklch(0.09 0.01 20);
+    background: linear-gradient(90deg, oklch(0.82 0.12 45), oklch(0.7 0.21 13));
+    font-size: 0.75rem;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .avatar-remove {
+    display: grid;
+    width: 1.9rem;
+    height: 1.9rem;
+    flex-shrink: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    color: oklch(0.99 0 0 / 0.7);
+    background: oklch(1 0 0 / 0.12);
+    cursor: pointer;
+    transition:
+      background 160ms ease,
+      color 160ms ease;
+  }
+
+  .avatar-remove:hover {
+    color: oklch(0.99 0 0);
+    background: oklch(0.58 0.22 25 / 0.7);
+  }
+
+  /* ------------------------------------------------------------- responsive */
+
+  @media (max-width: 850px) {
+    .login-scene {
+      padding: 0;
+      overflow: auto;
+    }
+
+    .login-shell {
+      grid-template-columns: 1fr;
+      border-radius: 0;
+    }
+
+    .login-form-panel {
+      min-height: 100vh;
+      padding: 4rem 1.5rem 3rem;
+    }
+
+    .testimonial-panel {
+      min-height: 42rem;
+      margin: 0;
+      border-radius: 2rem 2rem 0 0;
+    }
+
+    /* Stacked layout: the card can no longer hang off the panel, so it sits
+       in normal flow underneath it instead of overlapping. */
+    .job-card {
+      width: auto;
+      align-self: stretch;
+      margin: 0 1rem 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-form-panel {
+      min-height: auto;
+      padding-bottom: 4.5rem;
+    }
+
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+
+    .testimonial-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .testimonial-content h2 {
+      font-size: 2.1rem;
+    }
+
+    .starburst {
+      width: 14rem;
+      bottom: 9.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .login-scene *,
+    .login-scene *::before,
+    .login-scene *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

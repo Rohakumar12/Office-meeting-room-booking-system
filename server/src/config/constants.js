@@ -11,12 +11,19 @@ const JWT_CONFIG = {
   expire: process.env.JWT_EXPIRE || '7d',
 };
 
-// Cookie configuration
+// Cookie configuration (persisted, used when the user opts to stay signed in)
 const COOKIE_CONFIG = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+// Session cookie: no maxAge, so the browser discards it when the window closes
+const SESSION_COOKIE_CONFIG = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 };
 
 // Booking status enum
@@ -65,6 +72,7 @@ module.exports = {
   OFFICE_HOURS,
   JWT_CONFIG,
   COOKIE_CONFIG,
+  SESSION_COOKIE_CONFIG,
   BOOKING_STATUS,
   USER_ROLES,
   PAGINATION,

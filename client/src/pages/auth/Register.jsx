@@ -1,35 +1,44 @@
-import React, { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import useAuth from '../../hooks/useAuth';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-import {
-  BuildingOffice2Icon,
-  UserIcon,
-  EnvelopeIcon,
-  LockClosedIcon,
-  IdentificationIcon,
-  BriefcaseIcon,
-} from '@heroicons/react/24/outline';
+import AuthShell from '../../components/auth/AuthShell';
+import { userService } from '../../services/userService';
 import toast from 'react-hot-toast';
 
-const MAX_AVATAR_BYTES = 1_500_000;
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 const Register = () => {
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+
+  const nameId = useId();
+  const emailId = useId();
+  const departmentId = useId();
+  const employeeIdId = useId();
+  const avatarId = useId();
+  const passwordId = useId();
+  const confirmId = useId();
+
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [avatarError, setAvatarError] = useState('');
+  const avatarInputRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
 
   const {
     register,
     handleSubmit,
     watch,
-    setValue,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -39,110 +48,76 @@ const Register = () => {
       employeeId: '',
       password: '',
       confirmPassword: '',
-      avatar: '',
     },
   });
 
   const password = watch('password');
-  const avatar = watch('avatar');
-  const avatarInputRef = useRef(null);
-  const [photoLoading, setPhotoLoading] = useState(false);
 
   const handleAvatarChange = (event) => {
     const file = event.target.files?.[0];
 
     if (!file) {
-      setPhotoLoading(false);
-      setValue('avatar', '', { shouldDirty: true, shouldValidate: true });
+      setAvatarFile(null);
+      setAvatarPreview('');
       return;
     }
 
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       event.target.value = '';
-      setPhotoLoading(false);
-      setValue('avatar', '', { shouldDirty: true, shouldValidate: true });
-      setError('avatar', {
-        type: 'validate',
-        message: 'Please upload a JPG, PNG, WEBP, or GIF image.',
-      });
+      setAvatarFile(null);
+      setAvatarPreview('');
+      setAvatarError('Please upload a JPG, PNG, WEBP, or GIF image.');
       return;
     }
 
     if (file.size > MAX_AVATAR_BYTES) {
       event.target.value = '';
-      setPhotoLoading(false);
-      setValue('avatar', '', { shouldDirty: true, shouldValidate: true });
-      setError('avatar', {
-        type: 'validate',
-        message: 'Profile photo must be smaller than 1.5 MB.',
-      });
+      setAvatarFile(null);
+      setAvatarPreview('');
+      setAvatarError('Profile photo must be smaller than 5 MB.');
       return;
     }
 
-    clearErrors('avatar');
-    setPhotoLoading(true);
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setValue('avatar', reader.result, {
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-      }
-      setPhotoLoading(false);
-    };
-
-    reader.onerror = () => {
-      setPhotoLoading(false);
-      setValue('avatar', '', { shouldDirty: true, shouldValidate: true });
-      setError('avatar', {
-        type: 'validate',
-        message: 'Unable to read that image. Please try another file.',
-      });
-    };
-
-    reader.readAsDataURL(file);
+    setAvatarError('');
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
   };
 
   const removeAvatar = () => {
-    if (avatarInputRef.current) {
-      avatarInputRef.current.value = '';
-    }
-    setValue('avatar', '', { shouldDirty: true, shouldValidate: true });
-    clearErrors('avatar');
+    if (avatarInputRef.current) avatarInputRef.current.value = '';
+    setAvatarFile(null);
+    setAvatarPreview('');
+    setAvatarError('');
   };
 
   const onSubmit = async (data) => {
-    if (photoLoading) return;
-
     try {
       setLoading(true);
       setServerError('');
-      const {
-        confirmPassword,
-        avatar: submittedAvatar,
-        department,
-        employeeId,
-        ...payload
-      } = data;
-      if (department) {
-        payload.department = department;
-      }
-      if (employeeId) {
-        payload.employeeId = employeeId;
-      }
-      if (submittedAvatar) {
-        payload.avatar = submittedAvatar;
-      }
+
+      // Never send the client-only confirm field, and omit the optional
+      // fields entirely when the employee left them blank.
+      const payload = { ...data };
+      delete payload.confirmPassword;
+      if (!payload.department) delete payload.department;
+      if (!payload.employeeId) delete payload.employeeId;
+
       await registerUser(payload);
+
+      if (avatarFile) {
+        try {
+          const uploadRes = await userService.uploadProfileImage(avatarFile);
+          if (!uploadRes.success) throw new Error('Profile image upload failed');
+          await refreshUser();
+        } catch {
+          toast.error('Account created, but profile photo upload failed. You can retry from Profile.');
+        }
+      }
+
       toast.success('Registration successful! Welcome aboard.');
       navigate('/dashboard');
     } catch (err) {
-      setServerError(
-        err.customMessage ||
-          'Registration failed. Please check your information.'
-      );
+      setServerError(err.customMessage || 'Registration failed. Please check your information.');
       toast.error(err.customMessage || 'Registration failed');
     } finally {
       setLoading(false);
@@ -150,192 +125,215 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mb-4">
-          <BuildingOffice2Icon className="w-7 h-7" />
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Create Employee Account
-        </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Join your organization's meeting room booking portal
+    <AuthShell tall label="Create a RoomReserve account">
+      <header>
+        <h1 className="login-title">Create your account</h1>
+        <p className="login-subtitle">Join your workspace and book your first meeting room.</p>
+      </header>
+
+      {serverError && (
+        <p className="form-alert" role="alert">
+          {serverError}
         </p>
-      </div>
+      )}
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-2xl rounded-2xl sm:px-10 border border-slate-100">
-          {serverError && (
-            <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700">
-              {serverError}
-            </div>
-          )}
+      <form className="login-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <label className="field-label" htmlFor={nameId}>
+          Full Name
+        </label>
+        <input
+          className="login-input"
+          id={nameId}
+          type="text"
+          autoComplete="name"
+          placeholder="e.g. John Doe"
+          aria-invalid={errors.name ? 'true' : undefined}
+          aria-describedby={errors.name ? `${nameId}-error` : undefined}
+          {...register('name', {
+            required: 'Full name is required',
+            minLength: { value: 2, message: 'Name must be at least 2 characters' },
+          })}
+        />
+        {errors.name && (
+          <p className="form-error" id={`${nameId}-error`}>
+            {errors.name.message}
+          </p>
+        )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              label="Full Name"
+        <label className="field-label" htmlFor={emailId}>
+          Work Email
+        </label>
+        <input
+          className="login-input"
+          id={emailId}
+          type="email"
+          autoComplete="email"
+          placeholder="you@office.com"
+          aria-invalid={errors.email ? 'true' : undefined}
+          aria-describedby={errors.email ? `${emailId}-error` : undefined}
+          {...register('email', {
+            required: 'Work email is required',
+            pattern: {
+              value: /^\S+@\S+\.\S+$/,
+              message: 'Please enter a valid email address',
+            },
+          })}
+        />
+        {errors.email && (
+          <p className="form-error" id={`${emailId}-error`}>
+            {errors.email.message}
+          </p>
+        )}
+
+        <div className="field-row">
+          <div>
+            <label className="field-label" htmlFor={departmentId}>
+              Department
+            </label>
+            <input
+              className="login-input"
+              id={departmentId}
               type="text"
-              icon={UserIcon}
-              placeholder="e.g. John Doe"
-              required
-              error={errors.name?.message}
-              {...register('name', {
-                required: 'Full name is required',
-                minLength: {
-                  value: 2,
-                  message: 'Name must be at least 2 characters',
-                },
-              })}
+              placeholder="Engineering"
+              aria-invalid={errors.department ? 'true' : undefined}
+              aria-describedby={errors.department ? `${departmentId}-error` : undefined}
+              {...register('department')}
             />
-
-            <Input
-              label="Work Email"
-              type="email"
-              icon={EnvelopeIcon}
-              placeholder="john@office.com"
-              required
-              error={errors.email?.message}
-              {...register('email', {
-                required: 'Work email is required',
-                pattern: {
-                  value: /^\S+@\S+\.\S+$/,
-                  message: 'Please enter a valid email address',
-                },
-              })}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input
-                label="Department"
-                type="text"
-                icon={BriefcaseIcon}
-                placeholder="Engineering"
-                error={errors.department?.message}
-                {...register('department')}
-              />
-
-              <Input
-                label="Employee ID"
-                type="text"
-                icon={IdentificationIcon}
-                placeholder="EMP102"
-                error={errors.employeeId?.message}
-                {...register('employeeId')}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="avatar"
-                className="block text-sm font-medium text-slate-700 mb-1"
-              >
-                Profile Photo <span className="text-slate-400 font-normal">(Optional)</span>
-              </label>
-              <input
-                ref={avatarInputRef}
-                id="avatar"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                onChange={handleAvatarChange}
-                className="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold hover:file:bg-blue-100 cursor-pointer rounded-lg border border-slate-300 bg-white p-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <input type="hidden" {...register('avatar')} />
-              <p className="mt-1 text-xs text-slate-500">
-                Upload a JPG, PNG, WEBP, or GIF image up to 1.5 MB.
+            {errors.department && (
+              <p className="form-error" id={`${departmentId}-error`}>
+                {errors.department.message}
               </p>
-              {errors.avatar?.message && (
-                <p className="mt-1 text-xs text-red-600 font-medium">
-                  {errors.avatar.message}
-                </p>
-              )}
-              {photoLoading && (
-                <p className="mt-1 text-xs text-blue-600 font-medium">
-                  Processing photo...
-                </p>
-              )}
-              {avatar && !photoLoading && (
-                <div className="mt-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                  <img
-                    src={avatar}
-                    alt="Profile preview"
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-500/20"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-slate-700">
-                      Profile photo selected
-                    </p>
-                    <button
-                      type="button"
-                      onClick={removeAvatar}
-                      className="mt-1 text-xs font-medium text-red-600 hover:text-red-700"
-                    >
-                      Remove photo
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
+          </div>
 
-            <Input
-              label="Password"
-              type="password"
-              icon={LockClosedIcon}
-              placeholder="••••••••"
-              required
-              helperText="Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char"
-              error={errors.password?.message}
-              {...register('password', {
-                required: 'Password is required',
-                minLength: {
-                  value: 8,
-                  message: 'Password must be at least 8 characters',
-                },
-                pattern: {
-                  value:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-                  message:
-                    'Must include uppercase, lowercase, number, and special character',
-                },
-              })}
+          <div>
+            <label className="field-label" htmlFor={employeeIdId}>
+              Employee ID
+            </label>
+            <input
+              className="login-input"
+              id={employeeIdId}
+              type="text"
+              placeholder="EMP102"
+              aria-invalid={errors.employeeId ? 'true' : undefined}
+              aria-describedby={errors.employeeId ? `${employeeIdId}-error` : undefined}
+              {...register('employeeId')}
             />
-
-            <Input
-              label="Confirm Password"
-              type="password"
-              icon={LockClosedIcon}
-              placeholder="••••••••"
-              required
-              error={errors.confirmPassword?.message}
-              {...register('confirmPassword', {
-                required: 'Please confirm your password',
-                validate: (val) =>
-                  val === password || 'Passwords do not match',
-              })}
-            />
-
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full mt-2"
-              size="lg"
-              loading={loading || photoLoading}
-            >
-              Complete Registration
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-xs text-slate-500">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="font-semibold text-blue-600 hover:text-blue-700"
-            >
-              Sign In
-            </Link>
+            {errors.employeeId && (
+              <p className="form-error" id={`${employeeIdId}-error`}>
+                {errors.employeeId.message}
+              </p>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+
+        <div className="avatar-picker">
+          <span className="avatar-preview">
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="Profile preview" className="h-full w-full object-cover" />
+            ) : (
+              <PhotoIcon className="h-5 w-5" aria-hidden="true" />
+            )}
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <label className="sr-only" htmlFor={avatarId}>
+              Profile photo (optional)
+            </label>
+            <input
+              ref={avatarInputRef}
+              id={avatarId}
+              type="file"
+              className="avatar-file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleAvatarChange}
+              aria-describedby={avatarError ? `${avatarId}-error` : `${avatarId}-hint`}
+            />
+            <p className="field-hint" id={`${avatarId}-hint`} style={{ margin: '0.3rem 0 0' }}>
+              Optional. JPG, PNG, WEBP or GIF up to 5 MB.
+            </p>
+            {avatarError && (
+              <p className="form-error" id={`${avatarId}-error`} style={{ margin: '0.3rem 0 0' }}>
+                {avatarError}
+              </p>
+            )}
+          </div>
+
+          {avatarPreview && (
+            <button
+              type="button"
+              className="avatar-remove"
+              onClick={removeAvatar}
+              aria-label="Remove selected photo"
+            >
+              <XMarkIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        <label className="field-label" htmlFor={passwordId}>
+          Password
+        </label>
+        <input
+          className="login-input password-input"
+          id={passwordId}
+          type="password"
+          autoComplete="new-password"
+          placeholder="Create a password"
+          aria-invalid={errors.password ? 'true' : undefined}
+          aria-describedby={errors.password ? `${passwordId}-error` : `${passwordId}-hint`}
+          {...register('password', {
+            required: 'Password is required',
+            minLength: { value: 8, message: 'Password must be at least 8 characters' },
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+              message:
+                'Must include uppercase, lowercase, number, and special character',
+            },
+          })}
+        />
+        {errors.password ? (
+          <p className="form-error" id={`${passwordId}-error`}>
+            {errors.password.message}
+          </p>
+        ) : (
+          <p className="field-hint" id={`${passwordId}-hint`}>
+            Min 8 characters, with 1 uppercase, 1 lowercase, 1 number and 1 special
+            character (e.g. @ # _ - . !).
+          </p>
+        )}
+
+        <label className="field-label" htmlFor={confirmId}>
+          Confirm Password
+        </label>
+        <input
+          className="login-input password-input"
+          id={confirmId}
+          type="password"
+          autoComplete="new-password"
+          placeholder="Re-enter your password"
+          aria-invalid={errors.confirmPassword ? 'true' : undefined}
+          aria-describedby={errors.confirmPassword ? `${confirmId}-error` : undefined}
+          {...register('confirmPassword', {
+            required: 'Please confirm your password',
+            validate: (val) => val === password || 'Passwords do not match',
+          })}
+        />
+        {errors.confirmPassword && (
+          <p className="form-error" id={`${confirmId}-error`}>
+            {errors.confirmPassword.message}
+          </p>
+        )}
+
+        <button type="submit" className="sign-in-button" disabled={loading}>
+          {loading ? 'Creating account…' : 'Create account'}
+        </button>
+      </form>
+
+      <Link to="/login" className="auth-alt-link">
+        Already have an account? Sign in
+      </Link>
+    </AuthShell>
   );
 };
 

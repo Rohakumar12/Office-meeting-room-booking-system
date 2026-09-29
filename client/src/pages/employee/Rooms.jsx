@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { roomService } from '../../services/roomService';
 import SearchBar from '../../components/rooms/SearchBar';
 import FilterPanel from '../../components/rooms/FilterPanel';
@@ -61,10 +61,10 @@ const Rooms = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
           Meeting Rooms
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Browse, filter, and inspect conference rooms available across your office campus.
         </p>
       </div>
@@ -77,7 +77,7 @@ const Rooms = () => {
             setSearch(val);
             setPage(1);
           }}
-          placeholder="Search by room name, location, or amenities..."
+          placeholder="Search by room name and location"
         />
       </div>
 

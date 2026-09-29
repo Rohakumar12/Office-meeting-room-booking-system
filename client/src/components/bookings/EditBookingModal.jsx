@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { bookingService } from '../../services/bookingService';
 import { TIME_SLOTS } from '../../utils/constants';
 import { getTodayDateInputString } from '../../utils/formatters';
@@ -78,7 +78,7 @@ const EditBookingModal = ({
     <Modal isOpen={Boolean(booking)} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-lg bg-red-50 text-xs text-red-700 font-medium">
+          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 text-xs text-red-700 dark:text-red-300 font-medium">
             {error}
           </div>
         )}
@@ -127,18 +127,18 @@ const EditBookingModal = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
             Description
           </label>
           <textarea
             rows={2}
             value={form.description}
             onChange={(event) => updateField('description', event.target.value)}
-            className="block w-full rounded-lg border border-slate-300 py-2 px-3 text-sm"
+            className="block w-full rounded-lg border border-slate-300 dark:border-slate-500 py-2 px-3 text-sm"
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
           <Button variant="secondary" onClick={onClose} disabled={saving}>
             Cancel
           </Button>

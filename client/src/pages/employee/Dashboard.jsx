@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { bookingService } from '../../services/bookingService';
@@ -89,16 +89,16 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header Greeting Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-700 dark:from-blue-600 via-blue-600 dark:via-blue-600 to-indigo-700 dark:to-indigo-600 rounded-3xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold backdrop-blur-md mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 dark:bg-slate-900/20 text-white text-xs font-semibold backdrop-blur-md mb-3">
             <SparklesIcon className="w-3.5 h-3.5" />
             {formatDate(new Date(), 'EEEE, MMMM dd, yyyy')}
           </span>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
             {getGreeting()}, {user?.name?.split(' ')[0]} 👋
           </h1>
-          <p className="mt-2 text-blue-100 text-sm sm:text-base leading-relaxed">
+          <p className="mt-2 text-blue-100 dark:text-blue-100 text-sm sm:text-base leading-relaxed">
             Ready to collaborate? Check room schedules, reserve your workspace,
             and manage all your team bookings in one place.
           </p>
@@ -107,7 +107,7 @@ const Dashboard = () => {
               <Button
                 variant="secondary"
                 size="md"
-                className="font-bold text-blue-700 hover:bg-blue-50 border-transparent shadow-sm"
+                className="font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950 border-transparent shadow-sm"
                 icon={PlusCircleIcon}
               >
                 Book a Room Now
@@ -131,20 +131,20 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Upcoming Meeting Highlight */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 flex items-center justify-center">
                   <ClockIcon className="w-5 h-5" />
                 </div>
-                <h2 className="text-lg font-bold text-slate-900">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   Next Upcoming Meeting
                 </h2>
               </div>
               {upcomingBooking && (
                 <Link
                   to={`/bookings/${upcomingBooking._id}`}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-800"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   Details →
                 </Link>
@@ -152,35 +152,35 @@ const Dashboard = () => {
             </div>
 
             {loading ? (
-              <div className="h-36 bg-slate-100 rounded-xl animate-pulse" />
+              <div className="h-36 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />
             ) : upcomingBooking ? (
-              <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl p-5 border border-blue-100/80">
+              <div className="bg-gradient-to-br from-blue-50/50 dark:from-blue-950/50 to-indigo-50/30 dark:to-indigo-950/30 rounded-2xl p-5 border border-blue-100/80 dark:border-blue-800/80">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 mb-2">
                       Confirmed
                     </span>
-                    <h3 className="text-xl font-extrabold text-slate-900">
+                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
                       {upcomingBooking.title}
                     </h3>
-                    <p className="text-sm font-semibold text-blue-700 mt-1 flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mt-1 flex items-center gap-1.5">
                       <BuildingOfficeIcon className="w-4 h-4" />
                       {upcomingBooking.roomId?.name} ({upcomingBooking.roomId?.floor})
                     </p>
                   </div>
-                  <div className="sm:text-right bg-white sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-slate-200">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <div className="sm:text-right bg-white dark:bg-slate-900 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-slate-200 dark:border-slate-600">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       {formatDate(upcomingBooking.date)}
                     </p>
-                    <p className="text-lg font-mono font-bold text-slate-900 mt-0.5">
+                    <p className="text-lg font-mono font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                       {formatTime12h(upcomingBooking.startTime)} -{' '}
                       {formatTime12h(upcomingBooking.endTime)}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-blue-100 flex items-center justify-between">
-                  <span className="text-xs text-slate-500">
+                <div className="mt-5 pt-4 border-t border-blue-100 dark:border-blue-800 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     {upcomingBooking.attendees
                       ? `${upcomingBooking.attendees} team members attending`
                       : 'Meeting scheduled'}
@@ -195,12 +195,12 @@ const Dashboard = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-10 px-4 rounded-xl bg-slate-50 border border-dashed border-slate-200">
-                <CalendarDaysIcon className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-slate-700">
+              <div className="text-center py-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-200 dark:border-slate-600">
+                <CalendarDaysIcon className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   No upcoming meetings scheduled
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Ready to book a room for your next discussion?
                 </p>
                 <Link to="/book-room" className="inline-block mt-4">
@@ -212,15 +212,15 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Today's Schedule List */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+          {/* Today&rsquo;s Schedule List */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-slate-900">
-                Today's Schedule
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                Today&rsquo;s Schedule
               </h2>
               <Link
                 to="/bookings"
-                className="text-xs font-semibold text-blue-600 hover:text-blue-800"
+                className="text-xs font-semibold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200"
               >
                 View all ({todayBookings.length}) →
               </Link>
@@ -228,8 +228,8 @@ const Dashboard = () => {
 
             {loading ? (
               <div className="space-y-3">
-                <div className="h-16 bg-slate-100 rounded-xl animate-pulse" />
-                <div className="h-16 bg-slate-100 rounded-xl animate-pulse" />
+                <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />
+                <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />
               </div>
             ) : todayBookings.length > 0 ? (
               <div className="space-y-3">
@@ -243,7 +243,7 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-500 text-center py-6">
+              <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">
                 You have no meetings scheduled for today.
               </p>
             )}
@@ -253,82 +253,82 @@ const Dashboard = () => {
         {/* Right 1 Col: Quick Actions & Office Stats */}
         <div className="space-y-6">
           {/* Quick Actions Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4">
               Quick Actions
             </h3>
             <div className="space-y-2.5">
               <Link
                 to="/book-room"
-                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all group"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-600 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/50 transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 flex items-center justify-center group-hover:scale-105 transition-transform">
                     <PlusCircleIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">Book a Room</p>
-                    <p className="text-xs text-slate-500">Find & reserve rooms</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">Book a Room</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Find & reserve rooms</p>
                   </div>
                 </div>
-                <ArrowRightIcon className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRightIcon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               <Link
                 to="/rooms"
-                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all group"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-600 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/50 transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 flex items-center justify-center group-hover:scale-105 transition-transform">
                     <BuildingOfficeIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">Browse Rooms</p>
-                    <p className="text-xs text-slate-500">View room specs & photos</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">Browse Rooms</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">View room specs & photos</p>
                   </div>
                 </div>
-                <ArrowRightIcon className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRightIcon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               <Link
                 to="/bookings"
-                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all group"
+                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-600 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/50 transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 flex items-center justify-center group-hover:scale-105 transition-transform">
                     <CalendarDaysIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">My Bookings</p>
-                    <p className="text-xs text-slate-500">Edit or cancel meetings</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">My Bookings</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Edit or cancel meetings</p>
                   </div>
                 </div>
-                <ArrowRightIcon className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRightIcon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
             </div>
           </div>
 
           {/* Department Info */}
-          <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xs">
-            <h4 className="text-xs uppercase font-bold text-blue-400 tracking-wider">
+          <div className="bg-slate-900 dark:bg-slate-950 rounded-2xl p-6 text-white shadow-xs">
+            <h4 className="text-xs uppercase font-bold text-blue-400 dark:text-blue-300 tracking-wider">
               Employee Profile
             </h4>
             <div className="mt-3 space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Department</span>
-                <span className="font-semibold text-slate-200">
+              <div className="flex justify-between py-1 border-b border-slate-800 dark:border-slate-700">
+                <span className="text-slate-400 dark:text-slate-500">Department</span>
+                <span className="font-semibold text-slate-200 dark:text-slate-200">
                   {user?.department || 'General'}
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Employee ID</span>
-                <span className="font-mono text-slate-200">
+              <div className="flex justify-between py-1 border-b border-slate-800 dark:border-slate-700">
+                <span className="text-slate-400 dark:text-slate-500">Employee ID</span>
+                <span className="font-mono text-slate-200 dark:text-slate-200">
                   {user?.employeeId || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-400">Portal Role</span>
-                <span className="capitalize font-semibold text-emerald-400">
+                <span className="text-slate-400 dark:text-slate-500">Portal Role</span>
+                <span className="capitalize font-semibold text-emerald-400 dark:text-emerald-300">
                   {user?.role}
                 </span>
               </div>
@@ -341,16 +341,16 @@ const Dashboard = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900">
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
               Popular Meeting Rooms
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Explore available conference spaces across all office wings
             </p>
           </div>
           <Link
             to="/rooms"
-            className="text-xs font-bold text-blue-600 hover:text-blue-800"
+            className="text-xs font-bold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200"
           >
             Explore All Rooms →
           </Link>

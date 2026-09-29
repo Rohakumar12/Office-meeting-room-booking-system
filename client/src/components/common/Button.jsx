@@ -1,4 +1,3 @@
-import React from 'react';
 
 const Button = ({
   children,
@@ -17,17 +16,17 @@ const Button = ({
 
   const variants = {
     primary:
-      'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow focus:ring-blue-500 active:bg-blue-800',
+      'bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white shadow-sm hover:shadow focus:ring-blue-500 dark:focus:ring-blue-500 active:bg-blue-800 dark:active:bg-blue-500',
     secondary:
-      'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-sm focus:ring-blue-500',
+      'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-950 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-500 shadow-sm focus:ring-blue-500 dark:focus:ring-blue-500',
     danger:
-      'bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow focus:ring-red-500 active:bg-red-800',
+      'bg-red-600 dark:bg-red-600 hover:bg-red-700 dark:hover:bg-red-600 text-white shadow-sm hover:shadow focus:ring-red-500 dark:focus:ring-red-500 active:bg-red-800 dark:active:bg-red-500',
     success:
-      'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500 active:bg-emerald-800',
+      'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 dark:hover:bg-emerald-600 text-white shadow-sm focus:ring-emerald-500 dark:focus:ring-emerald-500 active:bg-emerald-800 dark:active:bg-emerald-500',
     ghost:
-      'text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:ring-slate-400',
+      'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400 dark:focus:ring-slate-400',
     outline:
-      'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+      'border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950 focus:ring-blue-500 dark:focus:ring-blue-500',
   };
 
   const sizes = {

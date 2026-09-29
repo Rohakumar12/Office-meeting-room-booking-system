@@ -1,4 +1,3 @@
-import React from 'react';
 import RoomCard from './RoomCard';
 import { RoomCardSkeleton } from '../common/Skeleton';
 import EmptyState from '../common/EmptyState';

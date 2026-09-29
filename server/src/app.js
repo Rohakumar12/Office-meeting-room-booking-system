@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 
 const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 const roomRoutes = require('./routes/room.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const adminRoutes = require('./routes/admin.routes');
@@ -13,6 +14,13 @@ const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
+
+// Behind a reverse proxy (Render, nginx) the socket address belongs to the
+// proxy, not the client. Without this every visitor shares one rate-limit
+// bucket, so a single person's traffic can throttle everyone else.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 // Security headers
 app.use(
@@ -56,6 +64,7 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);

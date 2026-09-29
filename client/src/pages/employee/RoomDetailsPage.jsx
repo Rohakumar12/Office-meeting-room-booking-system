@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { roomService } from '../../services/roomService';
 import { getTodayDateInputString, formatDate } from '../../utils/formatters';
@@ -11,7 +11,6 @@ import {
   MapPinIcon,
   BuildingOfficeIcon,
   SparklesIcon,
-  CalendarIcon,
   ArrowLeftIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -92,7 +91,7 @@ const RoomDetailsPage = () => {
       <div>
         <Link
           to="/rooms"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
         >
           <ArrowLeftIcon className="w-4 h-4" />
           Back to all rooms
@@ -102,8 +101,8 @@ const RoomDetailsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left 2 Cols: Details & Photos */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div className="relative h-64 sm:h-80 w-full bg-slate-100">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 overflow-hidden shadow-xs">
+            <div className="relative h-64 sm:h-80 w-full bg-slate-100 dark:bg-slate-800">
               <img
                 src={room.image || defaultImage}
                 alt={room.name}
@@ -116,8 +115,8 @@ const RoomDetailsPage = () => {
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md shadow-xs ${
                     room.isActive
-                      ? 'bg-emerald-500/90 text-white'
-                      : 'bg-rose-500/90 text-white'
+                      ? 'bg-emerald-500/90 dark:bg-emerald-600/90 text-white'
+                      : 'bg-rose-500/90 dark:bg-rose-600/90 text-white'
                   }`}
                 >
                   {room.isActive ? (
@@ -136,20 +135,20 @@ const RoomDetailsPage = () => {
             <div className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
                     {room.name}
                   </h1>
-                  <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-500">
+                  <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
                     <span className="flex items-center gap-1.5 font-medium">
-                      <MapPinIcon className="w-4 h-4 text-slate-400" />
+                      <MapPinIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                       {room.location}
                     </span>
                     <span className="flex items-center gap-1.5 font-medium">
-                      <BuildingOfficeIcon className="w-4 h-4 text-slate-400" />
+                      <BuildingOfficeIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                       {room.floor}
                     </span>
                     <span className="flex items-center gap-1.5 font-medium">
-                      <UsersIcon className="w-4 h-4 text-slate-400" />
+                      <UsersIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                       Max {room.capacity} People
                     </span>
                   </div>
@@ -165,28 +164,28 @@ const RoomDetailsPage = () => {
               </div>
 
               {room.description && (
-                <div className="mt-6 pt-6 border-t border-slate-100">
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">
+                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-2">
                     About this Space
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     {room.description}
                   </p>
                 </div>
               )}
 
               {/* Amenities */}
-              <div className="mt-6 pt-6 border-t border-slate-100">
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">
+              <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-3">
                   Equipped Amenities
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {room.amenities?.map((amenity, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs font-semibold text-slate-700"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200"
                     >
-                      <SparklesIcon className="w-4 h-4 text-blue-600 shrink-0" />
+                      <SparklesIcon className="w-4 h-4 text-blue-600 dark:text-blue-300 shrink-0" />
                       <span>{amenity}</span>
                     </div>
                   ))}
@@ -198,16 +197,16 @@ const RoomDetailsPage = () => {
 
         {/* Right 1 Col: Day Schedule / Availability Calendar */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
                 Availability Schedule
               </h3>
             </div>
 
             {/* Date Picker */}
             <div className="mb-4">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
                 Select Date
               </label>
               <input
@@ -215,13 +214,13 @@ const RoomDetailsPage = () => {
                 value={selectedDate}
                 min={getTodayDateInputString()}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full text-sm rounded-xl border border-slate-300 py-2 px-3 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-500 py-2 px-3 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-slate-900"
               />
             </div>
 
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
               Showing schedule for{' '}
-              <span className="font-semibold text-slate-800">
+              <span className="font-semibold text-slate-800 dark:text-slate-100">
                 {formatDate(selectedDate, 'MMMM d, yyyy')}
               </span>
             </p>
@@ -237,7 +236,7 @@ const RoomDetailsPage = () => {
             />
 
             {room.isActive && (
-              <div className="mt-6 pt-4 border-t border-slate-100">
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <Link
                   to={`/book-room?roomId=${room._id}&date=${selectedDate}`}
                   className="block w-full"

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService';
 
 export const AuthContext = createContext(null);
@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }) => {
     role: user?.role,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
-    isEmployee: user?.role === 'employee',
     loading,
     login,
     register,

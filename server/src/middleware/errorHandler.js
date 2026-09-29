@@ -22,8 +22,13 @@ const errorHandler = (err, req, res, next) => {
   if (err.code === 11000) {
     statusCode = 409;
     const field = Object.keys(err.keyValue)[0];
-    const value = err.keyValue[field];
-    message = `${field.charAt(0).toUpperCase() + field.slice(1)} '${value}' already exists`;
+    const label = field.charAt(0).toUpperCase() + field.slice(1);
+    // Never echo the value back for identifying fields: returning the submitted
+    // email would let anyone probe which accounts exist (account enumeration).
+    const safeFields = ['email', 'employeeId'];
+    message = safeFields.includes(field)
+      ? `That ${field === 'email' ? 'email address' : 'employee ID'} is already registered`
+      : `${label} already exists`;
     errors = [{ field, message }];
   }
 
@@ -31,6 +36,15 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'CastError') {
     statusCode = 400;
     message = `Invalid ${err.path}: ${err.value}`;
+  }
+
+  // Multer upload errors
+  if (err.name === 'MulterError') {
+    statusCode = 400;
+    message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Image must be smaller than 5 MB'
+        : 'Invalid image upload';
   }
 
   // JWT errors

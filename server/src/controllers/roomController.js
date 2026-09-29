@@ -1,5 +1,7 @@
 const roomService = require('../services/roomService');
+const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
+const { uploadImageFromLocalFile } = require('../utils/cloudinary');
 //controllers deal with req, res, next, http status code, http response and calling the service
 const getRooms = async (req, res, next) => {
   try {
@@ -68,6 +70,32 @@ const getRoomSchedule = async (req, res, next) => {
   }
 };
 
+const uploadRoomImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw new ApiError(400, 'Room image file is required');
+    }
+
+    const upload = await uploadImageFromLocalFile(req.file.path, {
+      folder: `${process.env.CLOUDINARY_FOLDER || 'roomreserve'}/room-images`,
+      transformation: [
+        { width: 1600, height: 900, crop: 'limit' },
+        { quality: 'auto' },
+      ],
+    });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        { url: upload.url, publicId: upload.publicId },
+        'Room image uploaded successfully',
+      ),
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getRooms,
   getRoomById,
@@ -76,4 +104,5 @@ module.exports = {
   deleteRoom,
   getAvailableRooms,
   getRoomSchedule,
+  uploadRoomImage,
 };

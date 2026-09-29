@@ -25,9 +25,4 @@ export const adminService = {
     const response = await api.get('/admin/bookings', { params });
     return response.data;
   },
-
-  getAllRooms: async (params = {}) => {
-    const response = await api.get('/admin/rooms', { params });
-    return response.data;
-  },
 };

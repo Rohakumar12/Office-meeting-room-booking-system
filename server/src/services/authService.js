@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
-const { COOKIE_CONFIG } = require('../config/constants');
+const { COOKIE_CONFIG, SESSION_COOKIE_CONFIG } = require('../config/constants');
 
 /**
  * Generate JWT token
@@ -14,11 +14,16 @@ const generateToken = (userId) => {
 
 /**
  * Send token via HTTP-only cookie and JSON response
+ *
+ * options.rememberMe === false -> session cookie (cleared when the browser closes)
+ * otherwise                    -> persistent cookie (COOKIE_CONFIG)
  */
-const sendTokenResponse = (user, statusCode, res, message) => {
+const sendTokenResponse = (user, statusCode, res, message, options = {}) => {
   const token = generateToken(user._id);
+  const cookieConfig =
+    options.rememberMe === false ? SESSION_COOKIE_CONFIG : COOKIE_CONFIG;
 
-  res.cookie('token', token, COOKIE_CONFIG);
+  res.cookie('token', token, cookieConfig);
 
   return res.status(statusCode).json({
     success: true,
@@ -43,7 +48,7 @@ const sendTokenResponse = (user, statusCode, res, message) => {
 /**
  * Register a new employee
  */
-const register = async ({ name, email, password, department, employeeId, avatar }) => {
+const register = async ({ name, email, password, department, employeeId }) => {
   // Check duplicate email
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
@@ -64,7 +69,6 @@ const register = async ({ name, email, password, department, employeeId, avatar 
     password,
     department,
     employeeId,
-    avatar: avatar || null,
     role: 'employee',
   });
 

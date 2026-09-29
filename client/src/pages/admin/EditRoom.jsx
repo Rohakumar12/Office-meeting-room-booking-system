@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { roomService } from '../../services/roomService';
@@ -123,23 +123,23 @@ const EditRoom = () => {
       <div>
         <Link
           to="/admin/rooms"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
         >
           <ArrowLeftIcon className="w-4 h-4" />
           Back to Room Management
         </Link>
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs">
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-2">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-600 p-6 sm:p-8 shadow-xs">
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mb-2">
           Edit Room Specifications
         </h1>
-        <p className="text-sm text-slate-500 mb-6 pb-4 border-b border-slate-100">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 pb-4 border-b border-slate-100 dark:border-slate-700">
           Modify configuration, seating capacity, or equipped amenities for this space.
         </p>
 
         {serverError && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700">
+          <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-700 text-xs font-medium text-red-700 dark:text-red-300">
             {serverError}
           </div>
         )}
@@ -191,19 +191,19 @@ const EditRoom = () => {
           />
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
               Room Description
             </label>
             <textarea
               rows={3}
-              className="block w-full rounded-lg border border-slate-300 py-2 px-3 text-sm text-slate-900 placeholder-slate-400 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-500 py-2 px-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500"
               {...register('description')}
             />
           </div>
 
           {/* Amenities Selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
               Available Amenities
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -216,15 +216,15 @@ const EditRoom = () => {
                     onClick={() => handleAmenityToggle(amenity)}
                     className={`p-2.5 text-xs font-semibold rounded-xl border text-left flex items-center gap-2 transition-all ${
                       isChecked
-                        ? 'bg-blue-50 border-blue-500 text-blue-800'
-                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                        ? 'bg-blue-50 dark:bg-blue-950 border-blue-500 dark:border-blue-500 text-blue-800 dark:text-blue-200'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-950'
                     }`}
                   >
                     <span
                       className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] ${
                         isChecked
-                          ? 'bg-blue-600 border-blue-600 text-white'
-                          : 'border-slate-300'
+                          ? 'bg-blue-600 dark:bg-blue-600 border-blue-600 dark:border-blue-400 text-white'
+                          : 'border-slate-300 dark:border-slate-500'
                       }`}
                     >
                       {isChecked && '✓'}
@@ -241,18 +241,18 @@ const EditRoom = () => {
             <input
               type="checkbox"
               id="isActive"
-              className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 dark:text-blue-300 rounded border-slate-300 dark:border-slate-500 focus:ring-blue-500 dark:focus:ring-blue-500"
               {...register('isActive')}
             />
             <label
               htmlFor="isActive"
-              className="text-sm font-medium text-slate-800 select-none cursor-pointer"
+              className="text-sm font-medium text-slate-800 dark:text-slate-100 select-none cursor-pointer"
             >
               Room is Active (ready for employee bookings)
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-700">
             <Link to="/admin/rooms">
               <Button variant="secondary">Cancel</Button>
             </Link>
