@@ -62,15 +62,13 @@ const Navbar = ({ onToggleSidebar }) => {
 
           {/* Right: Quick Action, User Info, Logout */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {!isAdmin && (
-              <Link
-                to="/book-room"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors border border-blue-200"
-              >
-                <PlusCircleIcon className="w-4 h-4" />
-                Book a Room
-              </Link>
-            )}
+            <Link
+              to="/book-room"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors border border-blue-200"
+            >
+              <PlusCircleIcon className="w-4 h-4" />
+              Book a Room
+            </Link>
 
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 

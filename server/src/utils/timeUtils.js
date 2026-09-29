@@ -37,10 +37,12 @@ const isValidTimeRange = (startTime, endTime) => {
 
 /**
  * Get normalized date (midnight UTC) from a date string or Date object
+ * setHours()    → local time
+setUTCHours() → UTC time
  */
 const normalizeDate = (date) => {
   const d = new Date(date);
-  d.setUTCHours(0, 0, 0, 0);
+  d.setUTCHours(0, 0, 0, 0); //d.setUTCHours(hours, minutes, seconds, milliseconds);
   return d;
 };
 
@@ -50,8 +52,8 @@ const normalizeDate = (date) => {
 const isPastDate = (date, startTime) => {
   const now = new Date();
   const bookingDate = new Date(date);
-  const [hours, minutes] = startTime.split(':').map(Number);
-  bookingDate.setHours(hours, minutes, 0, 0);
+  const [hours, minutes] = startTime.split(":").map(Number);
+  bookingDate.setHours(hours, minutes, 0, 0); //date.setHours(hour, minute, second, millisecond);
   return bookingDate < now;
 };
 

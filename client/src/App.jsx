@@ -67,7 +67,7 @@ function App() {
             {/* Redirect root to dashboard */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Employee Accessible Routes */}
+            {/* Authenticated employee and admin routes */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/rooms/:id" element={<RoomDetailsPage />} />

@@ -16,10 +16,9 @@ const getBookings = async (req, res, next) => {
   try {
     const { page, limit, ...filters } = req.query;
 
-    // Employees can only see their own bookings
-    if (req.user.role === 'employee') {
-      filters.userId = req.user._id;
-    }
+    // /api/bookings is the current user's personal booking list.
+    // Admins use /api/admin/bookings for company-wide results.
+    filters.userId = req.user._id;
 
     const result = await bookingService.getBookings(filters, page, limit);
     return res

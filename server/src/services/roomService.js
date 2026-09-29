@@ -9,7 +9,7 @@ const getRooms = async (filters = {}, page = 1, limit = 10) => {
   const query = {};
 
   if (filters.isActive !== undefined) {
-    query.isActive = filters.isActive;
+    query.isActive = filters .isActive;
   }
 
   if (filters.capacity) {

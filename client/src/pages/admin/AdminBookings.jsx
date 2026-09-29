@@ -3,6 +3,7 @@ import { adminService } from '../../services/adminService';
 import { bookingService } from '../../services/bookingService';
 import { roomService } from '../../services/roomService';
 import BookingTable from '../../components/bookings/BookingTable';
+import EditBookingModal from '../../components/bookings/EditBookingModal';
 import Pagination from '../../components/common/Pagination';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { FunnelIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -23,6 +24,9 @@ const AdminBookings = () => {
   // Cancel modal
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+
+  // Edit modal
+  const [editTarget, setEditTarget] = useState(null);
 
   // Load all rooms for dropdown
   useEffect(() => {
@@ -179,6 +183,7 @@ const AdminBookings = () => {
         loading={loading}
         isAdmin={true}
         onCancel={(b) => setCancelTarget(b)}
+        onEdit={(b) => setEditTarget(b)}
       />
 
       {/* Pagination */}
@@ -199,6 +204,16 @@ const AdminBookings = () => {
         title="Admin Cancellation"
         message={`Are you sure you want to cancel '${cancelTarget?.title}' booked by ${cancelTarget?.userId?.name}?`}
         confirmText="Confirm Cancellation"
+      />
+
+      <EditBookingModal
+        booking={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSaved={() => {
+          setEditTarget(null);
+          fetchBookings();
+        }}
+        title="Edit Booking"
       />
     </div>
   );

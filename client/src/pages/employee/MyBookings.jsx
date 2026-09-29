@@ -2,14 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { bookingService } from '../../services/bookingService';
 import BookingTable from '../../components/bookings/BookingTable';
 import BookingCard from '../../components/bookings/BookingCard';
+import EditBookingModal from '../../components/bookings/EditBookingModal';
 import Pagination from '../../components/common/Pagination';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import Modal from '../../components/common/Modal';
-import Input from '../../components/common/Input';
-import Select from '../../components/common/Select';
-import Button from '../../components/common/Button';
-import { TIME_SLOTS } from '../../utils/constants';
-import { getTodayDateInputString } from '../../utils/formatters';
 import {
   CalendarDaysIcon,
   TableCellsIcon,
@@ -31,16 +26,6 @@ const MyBookings = () => {
 
   // Edit state
   const [editTarget, setEditTarget] = useState(null);
-  const [editForm, setEditForm] = useState({
-    title: '',
-    description: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    attendees: 1,
-  });
-  const [savingEdit, setSavingEdit] = useState(false);
-  const [editError, setEditError] = useState('');
 
   const fetchBookings = useCallback(async () => {
     try {
@@ -86,41 +71,6 @@ const MyBookings = () => {
   // Open Edit Modal
   const openEditModal = (booking) => {
     setEditTarget(booking);
-    setEditError('');
-    setEditForm({
-      title: booking.title,
-      description: booking.description || '',
-      date: new Date(booking.date).toISOString().split('T')[0],
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      attendees: booking.attendees || 1,
-    });
-  };
-
-  // Submit Edit
-  const handleSaveEdit = async (e) => {
-    e.preventDefault();
-    if (!editTarget) return;
-
-    if (editForm.endTime <= editForm.startTime) {
-      setEditError('End time must be after start time');
-      return;
-    }
-
-    try {
-      setSavingEdit(true);
-      setEditError('');
-
-      await bookingService.updateBooking(editTarget._id, editForm);
-      toast.success('Booking updated successfully!');
-      setEditTarget(null);
-      fetchBookings();
-    } catch (err) {
-      setEditError(err.customMessage || 'Failed to update booking');
-      toast.error(err.customMessage || 'Update conflict');
-    } finally {
-      setSavingEdit(false);
-    }
   };
 
   return (
@@ -233,99 +183,14 @@ const MyBookings = () => {
       />
 
       {/* Edit Booking Modal */}
-      <Modal
-        isOpen={!!editTarget}
+      <EditBookingModal
+        booking={editTarget}
         onClose={() => setEditTarget(null)}
-        title="Edit Meeting Reservation"
-      >
-        <form onSubmit={handleSaveEdit} className="space-y-4">
-          {editError && (
-            <div className="p-3 rounded-lg bg-red-50 text-xs text-red-700 font-medium">
-              {editError}
-            </div>
-          )}
-
-          <Input
-            label="Meeting Title"
-            value={editForm.title}
-            onChange={(e) =>
-              setEditForm({ ...editForm, title: e.target.value })
-            }
-            required
-          />
-
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Date"
-              type="date"
-              min={getTodayDateInputString()}
-              value={editForm.date}
-              onChange={(e) =>
-                setEditForm({ ...editForm, date: e.target.value })
-              }
-              required
-            />
-            <Input
-              label="Attendees"
-              type="number"
-              min="1"
-              value={editForm.attendees}
-              onChange={(e) =>
-                setEditForm({ ...editForm, attendees: Number(e.target.value) })
-              }
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Select
-              label="Start Time"
-              options={TIME_SLOTS.slice(0, -1)}
-              value={editForm.startTime}
-              onChange={(e) =>
-                setEditForm({ ...editForm, startTime: e.target.value })
-              }
-              required
-            />
-            <Select
-              label="End Time"
-              options={TIME_SLOTS.slice(1)}
-              value={editForm.endTime}
-              onChange={(e) =>
-                setEditForm({ ...editForm, endTime: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={2}
-              value={editForm.description}
-              onChange={(e) =>
-                setEditForm({ ...editForm, description: e.target.value })
-              }
-              className="block w-full rounded-lg border border-slate-300 py-2 px-3 text-sm"
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button
-              variant="secondary"
-              onClick={() => setEditTarget(null)}
-              disabled={savingEdit}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" loading={savingEdit}>
-              Save Changes
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        onSaved={() => {
+          setEditTarget(null);
+          fetchBookings();
+        }}
+      />
     </div>
   );
 };

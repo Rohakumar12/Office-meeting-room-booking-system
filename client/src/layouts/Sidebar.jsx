@@ -29,6 +29,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Admin Dashboard', to: '/admin', icon: HomeIcon, end: true },
     { name: 'Manage Rooms', to: '/admin/rooms', icon: BuildingOfficeIcon },
     { name: 'Add New Room', to: '/admin/rooms/add', icon: SquaresPlusIcon },
+    { name: 'Book a Room', to: '/book-room', icon: PlusCircleIcon },
+    { name: 'My Bookings', to: '/bookings', icon: CalendarDaysIcon },
     { name: 'All Bookings', to: '/admin/bookings', icon: CalendarDaysIcon },
     { name: 'Employees', to: '/admin/users', icon: UsersIcon },
     { name: 'Analytics & Usage', to: '/admin/analytics', icon: ChartBarIcon },

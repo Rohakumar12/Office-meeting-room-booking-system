@@ -1,12 +1,16 @@
 require('dotenv').config(); 
 const app = require('./app');
 const connectDB = require('./config/db');
+const { startBookingCompletionJob } = require('./jobs/bookingCompletion');
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   // Connect to MongoDB
   await connectDB();
+
+  // Complete past bookings once at startup, then every five minutes.
+  const bookingCompletionTask = await startBookingCompletionJob();
 
   const server = app.listen(PORT, () => {
     console.log(`\n🚀 Server running in ${process.env.NODE_ENV} mode`);
@@ -17,6 +21,7 @@ const startServer = async () => {
   // Graceful shutdown
   const shutdown = async (signal) => {
     console.log(`\n${signal} received. Shutting down gracefully...`);
+    bookingCompletionTask.stop();
     server.close(async () => {
       const mongoose = require('mongoose');
       await mongoose.connection.close();
