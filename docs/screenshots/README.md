@@ -6,7 +6,7 @@ as soon as the files are committed.
 
 | # | File name                | Screen                                                     |
 | - | ------------------------ | ---------------------------------------------------------- |
-| 1 | `01-login.png`           | Sign-in page (light) with the testimonial panel            |
+| 1 | `01-login.jpg`           | Sign-in page (light) with the testimonial panel            |
 | 2 | `02-admin-dashboard.png` | Admin overview and analytics (dark)                        |
 | 3 | `03-employees.png`       | Employee management list (dark)                            |
 | 4 | `04-all-bookings.png`    | All company bookings (dark)                                |
@@ -15,7 +15,7 @@ as soon as the files are committed.
 | 7 | `07-book-a-room.png`     | Book a meeting room form (dark)                            |
 | 8 | `08-my-bookings.png`     | My bookings table and cards (dark)                         |
 | 9 | `09-profile.png`         | Employee profile (dark)                                    |
-| 10 | `10-register.png`        | Create your account page (light)                           |
+| 10 | `10-register.jpg`        | Create your account page (light)                           |
 | 11 | `11-analytics.png`       | Analytics and usage charts (light)                         |
 
 ## Tips

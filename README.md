@@ -75,7 +75,7 @@ The app is split into two independently runnable packages:
 
 | Sign in | Admin overview |
 | --- | --- |
-| ![Sign in with the testimonial panel](docs/screenshots/01-login.png) | ![Admin overview and analytics](docs/screenshots/02-admin-dashboard.png) |
+| ![Sign in with the testimonial panel](docs/screenshots/01-login.jpg) | ![Admin overview and analytics](docs/screenshots/02-admin-dashboard.png) |
 
 | Employee management | All bookings |
 | --- | --- |
@@ -91,7 +91,7 @@ The app is split into two independently runnable packages:
 
 | Profile | Register |
 | --- | --- |
-| ![Employee profile](docs/screenshots/09-profile.png) | ![Create your account](docs/screenshots/10-register.png) |
+| ![Employee profile](docs/screenshots/09-profile.png) | ![Create your account](docs/screenshots/10-register.jpg) |
 
 | Analytics |
 | --- |
