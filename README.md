@@ -10,6 +10,7 @@ A full-stack MERN application for managing and booking office meeting rooms, wit
 
 - [Overview](#overview)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -70,6 +71,31 @@ The app is split into two independently runnable packages:
 
 ---
 
+## Screenshots
+
+| Sign in | Admin overview |
+| --- | --- |
+| ![Sign in with the testimonial panel](docs/screenshots/01-login.png) | ![Admin overview and analytics](docs/screenshots/02-admin-dashboard.png) |
+
+| Employee management | All bookings |
+| --- | --- |
+| ![Employee management with avatars](docs/screenshots/03-employees.png) | ![All company bookings](docs/screenshots/04-all-bookings.png) |
+
+| Employee dashboard | Meeting rooms |
+| --- | --- |
+| ![Employee dashboard](docs/screenshots/05-employee-dashboard.png) | ![Meeting rooms browser with filters](docs/screenshots/06-meeting-rooms.png) |
+
+| Book a room | My bookings |
+| --- | --- |
+| ![Book a meeting room](docs/screenshots/07-book-a-room.png) | ![My bookings](docs/screenshots/08-my-bookings.png) |
+
+| Profile | Register |
+| --- | --- |
+| ![Employee profile](docs/screenshots/09-profile.png) | ![Create your account](docs/screenshots/10-register.png) |
+
+| Analytics |
+| --- |
+| ![Analytics and usage charts](docs/screenshots/11-analytics.png) |
 ## Tech Stack
 
 **Front end**
