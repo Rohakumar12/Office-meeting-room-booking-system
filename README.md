@@ -275,8 +275,9 @@ Use one of the demo accounts below, or register a new employee account through t
 | -------------------------------- | -------- | ----------------------- | -------------------------------------------- |
 | `PORT`                           | No       | `5000`                  | API port                                     |
 | `MONGODB_URI`                    | **Yes**  | —                       | MongoDB connection string                    |
-| `JWT_SECRET`                     | **Yes**  | —                       | Secret used to sign tokens                   |
-| `JWT_EXPIRE`                     | No       | `7d`                    | Token lifetime                               |
+| `JWT_SECRET`                     | **Yes**  | —                       | Secret used to sign access tokens            |
+| `JWT_EXPIRE`                     | No       | `15m`                   | Access token lifetime (`s`/`m`/`h`/`d`)      |
+| `REFRESH_TOKEN_TTL_DAYS`         | No       | `7`                     | Refresh token lifetime, in days              |
 | `CLIENT_URL`                     | **Yes**  | `http://localhost:5173` | Allowed CORS origin (no trailing slash)      |
 | `NODE_ENV`                       | No       | `development`           | Set to `production` on your host             |
 | `BCRYPT_ROUNDS`                  | No       | `12`                    | Password hashing cost                        |
@@ -331,18 +332,34 @@ All responses follow the shape:
 { "success": true, "message": "...", "data": { } }
 ```
 
-Authentication uses an **httpOnly cookie** containing a JWT, so browser requests must send credentials.
+Authentication uses **two httpOnly cookies**, so browser requests must send credentials (`withCredentials`).
+
+| Cookie         | Lifetime | Path          | Contents                                  |
+| -------------- | -------- | ------------- | ----------------------------------------- |
+| `accessToken`  | 15 min   | `/`           | Short-lived signed JWT for API calls      |
+| `refreshToken` | 7 days   | `/api/auth`   | Opaque random secret, stored **hashed**   |
+
+The refresh cookie is scoped to `/api/auth`, so the browser does not attach it to ordinary API calls. It is the only credential that can mint a new access token.
 
 ### Auth — `/api/auth`
 
-| Method | Endpoint   | Access  | Description                       |
-| ------ | ---------- | ------- | --------------------------------- |
-| `POST` | `/register`| Public  | Create an employee account        |
-| `POST` | `/login`   | Public  | Sign in, sets the auth cookie     |
-| `POST` | `/logout`  | Private | Clear the auth cookie             |
-| `GET`  | `/me`      | Private | Return the signed-in user         |
+| Method | Endpoint   | Access  | Description                                          |
+| ------ | ---------- | ------- | ---------------------------------------------------- |
+| `POST` | `/register`| Public  | Create an employee account                           |
+| `POST` | `/login`   | Public  | Sign in, sets both cookies                           |
+| `POST` | `/refresh` | Public  | Exchange the refresh cookie for a new token pair     |
+| `POST` | `/logout`  | Public  | Revoke the refresh token and clear both cookies       |
+| `GET`  | `/me`      | Private | Return the signed-in user                            |
 
-`POST /login` accepts an optional `rememberMe` boolean. When `false` the cookie becomes a session cookie that is discarded when the browser closes; otherwise it persists for 7 days.
+`POST /login` accepts an optional `rememberMe` boolean. When `false` both cookies become session cookies that are discarded when the browser closes; otherwise they persist for their full lifetime. That choice is stored on the token record, so a refresh keeps it rather than silently upgrading the session.
+
+**Silent renewal.** When an access token expires, the Axios interceptor in `client/src/services/api.js` calls `/auth/refresh` once and replays the original request. Concurrent 401s share a single in-flight refresh — without that, five parallel calls on page load would each rotate the token and invalidate the others.
+
+**Why the refresh token is stored hashed.** Only the SHA-256 hash is written to MongoDB, never the raw token, so a database dump cannot be replayed as a live session. This is safe because the token is 384 bits of `crypto.randomBytes` output; a slow KDF like bcrypt only protects low-entropy, guessable secrets such as passwords.
+
+**Rotation and theft detection.** Every refresh revokes the presented token and issues a new one, so a stolen token is usable at most once. Presenting an already-revoked token means either replay or theft, so the server revokes *every* session for that user and forces a fresh sign-in. Logout revokes only the presented token, so signing out on one device does not sign you out elsewhere; deactivating a user revokes all of theirs.
+
+Expired rows are removed automatically by a MongoDB TTL index on `expiresAt`, so the collection does not grow without bound.
 
 ### Rooms — `/api/rooms` *(all private)*
 
@@ -409,7 +426,10 @@ Authentication uses an **httpOnly cookie** containing a JWT, so browser requests
 | Concern            | How it is handled                                                            |
 | ------------------ | ---------------------------------------------------------------------------- |
 | Password storage   | bcrypt hashing with a configurable cost (default 12 rounds)                   |
-| Session            | JWT in an httpOnly cookie, so JavaScript cannot read it                       |
+| Session            | Short-lived JWT in an httpOnly cookie, so JavaScript cannot read it           |
+| Session renewal    | Opaque refresh token, SHA-256 hashed at rest, rotated on every use            |
+| Token theft        | Reuse of a rotated token revokes every session for that user                  |
+| Token storage      | MongoDB TTL index removes expired refresh tokens automatically               |
 | Validation         | Joi on the server, react-hook-form on the client                              |
 | XSS / headers      | `helmet` sets hardened headers, including cross-origin resource policy        |
 | CORS               | Restricted to `CLIENT_URL` with credentials enabled                          |
@@ -450,7 +470,21 @@ rate limiting sees real client IPs behind the proxy.
 Because `VITE_API_URL` is inlined at build time, rebuild the client whenever the API
 URL changes.
 
+> **Cross-site cookies.** With the client and API on different domains, the browser
+> treats every API call as cross-site. In production the server therefore sets
+> `SameSite=None; Secure` on both cookies, which is why `NODE_ENV=production` and
+> HTTPS are both required — over plain HTTP the browser silently drops the cookies
+> and every request comes back unauthenticated.
+
 > Keep the Cloudinary secrets on the **server only** — never add them to the client.
+
+### Changing the token lifetimes
+
+`JWT_EXPIRE` controls the access token and `REFRESH_TOKEN_TTL_DAYS` the refresh token.
+Setting `JWT_EXPIRE` also adjusts the access cookie's lifetime to match, so the two
+cannot drift apart. Keep the access token short (15–60 minutes): it is the credential
+most likely to leak, and a short life limits the damage. Anything longer makes the
+refresh path almost dead code, which is worse than not having it.
 
 ---
 

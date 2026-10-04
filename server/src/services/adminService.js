@@ -3,6 +3,7 @@ const Room = require('../models/Room');
 const Booking = require('../models/Booking');
 const ApiError = require('../utils/ApiError');
 const { normalizeDate } = require('../utils/timeUtils');
+const { revokeAllForUser } = require('./authService');
 
 /**
  * Get dashboard statistics
@@ -53,7 +54,7 @@ const getStatistics = async () => {
     },
   ]);
 
-  const uniqueRoomDays = utilizationData[0]?.uniqueRoomDays || 0;
+  const uniqueRoomDays = utilizationData[0]?.uniqueRoomDays || 0;// aggreagation return an array of matched
   const maxPossibleRoomDays = activeRooms * 30;
   const utilizationRate =
     maxPossibleRoomDays > 0
@@ -269,6 +270,13 @@ const toggleUserStatus = async (userId) => {
 
   user.isActive = !user.isActive;
   await user.save();
+
+  // A deactivated user must not be able to keep the session alive by letting
+  // the client silently refresh, so drop every stored refresh token.
+  if (!user.isActive) {
+    await revokeAllForUser(user._id);
+  }
+
   return user;
 };
 

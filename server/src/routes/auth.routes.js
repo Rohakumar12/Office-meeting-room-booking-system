@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, logout, getMe } = require('../controllers/authController');
+const { register, login, refresh, logout, getMe } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { authIpLimiter, authAccountLimiter } = require('../middleware/rateLimiter');
@@ -14,7 +14,13 @@ const authLimits = [authIpLimiter, authAccountLimiter];
 
 router.post('/register', ...authLimits, validate(registerSchema), register);
 router.post('/login', ...authLimits, validate(loginSchema), login);
-router.post('/logout', protect, logout);
+
+// Silent re-authentication. Rate limited by IP only - there is no account
+// identifier to key on, and it is already gated by a 384-bit secret.
+router.post('/refresh', authIpLimiter, refresh);
+
+// Unauthenticated on purpose: an expired access token must not block logout.
+router.post('/logout', logout);
 router.get('/me', protect, getMe);
 
 module.exports = router;

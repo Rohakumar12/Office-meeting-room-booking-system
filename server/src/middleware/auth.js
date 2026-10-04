@@ -1,13 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
+const { JWT_CONFIG } = require('../config/constants');
 
 const protect = async (req, res, next) => {
   try {
     let token;
 
     // Check HTTP-only cookie first
-    if (req.cookies && req.cookies.token) {
+    if (req.cookies && req.cookies.accessToken) {
+      token = req.cookies.accessToken;
+    }
+    // Cookies issued before refresh tokens were introduced. They self-expire
+    // within the old 7 day window, so this can be dropped once they have.
+    else if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
     }
     // Fallback to Authorization header for API clients/testing
@@ -22,9 +28,10 @@ const protect = async (req, res, next) => {
     // Verify token
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      decoded = jwt.verify(token, JWT_CONFIG.secret);
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
+        // The client interceptor treats this as "try the refresh token first".
         return next(new ApiError(401, 'Session expired. Please log in again.'));
       }
       return next(new ApiError(401, 'Invalid token. Please log in again.'));
